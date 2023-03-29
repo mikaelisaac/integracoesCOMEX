@@ -15,6 +15,7 @@ function fazGet(url){
 
 function operacao() {
     let retorno = fazGet(`https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/Moedas?$top=100&$format=json`)
+    console.log(retorno);
     let moedas = JSON.parse(retorno)
     console.log(moedas.value)
     var podioPorPais = moedas.value.map(function(moeda){

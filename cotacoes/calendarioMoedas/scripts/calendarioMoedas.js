@@ -1,54 +1,41 @@
-//-- Variáveis --
-let moeda = 0
-let contadorMes = 0;
-let dataHoje = new Date();
-let corpo = document.getElementById("tabelaCorpo")
-const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-let linha;
-let dtAux;
+var date = new Date();
+console.log(date.getMonth());
+var firstDay = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+var lastDay = new Date(date.getFullYear(), date.getMonth() + 2, 0);
 
-//-- Operações --
-do{
-    //console.log(meses[contadorMes]);
-    //console.log(`O mês atual é ${meses[dataHoje.getMonth()]}`);
-    //console.log(`O último dia do mês é: ${fInicioMes(dataHoje)}`);
-    //console.log(`O último dia do mês é: ${fFimMes(dataHoje)}`);
-    if (dataHoje.getMonth() == contadorMes){
-        let dtAux = fInicioMes(dataHoje).getDate();
-        let dtFim = fFimMes(dataHoje).getDate();
+/*console.log(firstDay);
+console.log(lastDay);*/
 
-        do{
-            /*buscaCotacao();*/
-            dtAux++
-        } while (dtAux < (dtFim + 1));
+lastDay = lastDay.getDate()
+firstDay = firstDay.getDate();
+
+for(let i= firstDay; i < lastDay + 1; i++){
+    let data  = date.getMonth() + 1 + "-" + i + "-" + date.getFullYear();
+    /*console.log(data);*/
+    
+    document.querySelector("#tabelaCalendario tbody").innerHTML +=
+    `<tr>
+        <td id="${i}">${i} ${operacao(data)}</td>
+    </tr>`;
+}
+
+function fazGet(url){
+    let request = new XMLHttpRequest()
+    request.open("GET", url, false)
+    request.send()
+    return request.responseText
+}
+
+function operacao(dataDigitada) {
+    let retorno = fazGet(`https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@dataCotacao)?@dataCotacao='${dataDigitada}'&$top=100&$format=json`)
+
+    let valores = JSON.parse(retorno)
+    if (valores.value.length !== 0) {
+        let cotacaoDeCompra = valores.value[0].cotacaoCompra
+        let cotacaoDeVenda = valores.value[0].cotacaoVenda
+        let msg = `-> Compra: ${cotacaoDeCompra} | Venda: ${cotacaoDeVenda}`
+        return msg;
+    } else {
+        return "";
     }
-
-    /*if (dtAux.getDay() == 6) {
-        
-
-    }*/
-    corpo.innerHTML = linha;
-
-    contadorMes++;
-} while (contadorMes < 12);
-
-//-- Functions --
-function fInicioMes(data){
-    let primeiroDiaMes = new Date(data.getFullYear(), data.getMonth(), 1);
-    return primeiroDiaMes;
 }
-
-function fFimMes(data){
-    let ultimoDiaMes = new Date(data.getFullYear(), data.getMonth()+1, 0);
-    return ultimoDiaMes;
-}
-
-/*function buscaCotacao(data,moeda){
-    fazGet()
-    // Pega o retorno e trata o valor para que 
-    console.log(`A cotação do dólar para o dia ${dtAux} é de:`);
-}
-
-function fazGet(data){
-    return valorCotacao
-}*/
